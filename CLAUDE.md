@@ -7,6 +7,10 @@ Lightweight big-card game launcher for the Retroid Pocket Nova (1280x960 landsca
 - Set as the default home screen: `adb shell cmd package set-home-activity dev.nova.launcher/.MainActivity`.
 - A hung RetroArch window can keep input focus even after `am force-stop`. Check with a screenshot, not only `dumpsys window`.
 
+## Releasing
+
+Push a `v<x.y.z>` tag. `.github/workflows/release.yml` builds with `VERSION` from the tag (versionCode = x*10000 + y*100 + z), signs with the release key from the `KEYSTORE_BASE64` / `KEYSTORE_PASSWORD` secrets, and attaches the APK to a GitHub release. Locally, `build.sh` signs with the same key from `~/.android/nova-release.jks` (password in `~/.android/nova-release.pass`) when present, so local installs update over release installs. Without that key it falls back to the debug key, which can't update a release install.
+
 ## Adding a game
 
 Add an entry to `GAMES` in `src/dev/nova/launcher/MainActivity.java`. Order in the array = card order.
