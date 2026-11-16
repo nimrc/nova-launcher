@@ -1,12 +1,13 @@
 # Nova Launcher
 
-A lightweight big-card game launcher for the Retroid Pocket Nova (Android 13, 1280x960). It is plain Java with no AndroidX and no Gradle, and the whole APK is a few MB of cover art plus four classes. It can be set as the default home screen.
+A lightweight big-card game launcher for the Retroid Pocket Nova (Android 13, 1280x960). It is plain Java with no AndroidX and no Gradle, and the APK is under 30 KB. It can be set as the default home screen.
 
 ![Home](docs/home.png)
 
 ## Features
 
 - Full-bleed 2:3 cover cards, three on screen, with a blurred background of the selected cover.
+- Configured with a JSON file and a covers folder on the device, with no rebuild needed.
 - Native Android games, RetroArch games (ROM and core passed through the launch intent) and standalone Dolphin (GameCube) games.
 - Collections open a second-level page. Examples are the Metal Slug and Zelda series.
 - Gamepad-first controls: Ⓐ starts a game, Ⓑ goes back, Ⓨ opens the app drawer. The selected card is remembered.
@@ -28,18 +29,40 @@ ANDROID_SERIAL=<serial> ./build.sh install  # install and start
 adb shell cmd package set-home-activity dev.nova.launcher/.MainActivity
 ```
 
-## Adding games
+## Configuration
 
-Games are listed in `GAMES` in `src/dev/nova/launcher/MainActivity.java`, and covers live in `assets/covers/<key>.jpg` (600x900). Example entries:
+Games and covers are read from shared storage, so you can edit them without rebuilding:
 
-```java
-new Game("空洞骑士", "Hollow Knight", "org.nx2a.t0100633007d48000"),
-new Game("恐龙快打", "Cadillacs and Dinosaurs · Arcade", RETROARCH)
-        .cover("dino").retroarch("/storage/emulated/0/ROMs/arcade/dino.zip", "fbneo"),
-new Game("合金弹头 合集", "Metal Slug Collection", RETROARCH)
-        .cover("metal_slug_collection").collection(/* child games */),
+```
+/sdcard/Nova/games.json      card list (order = card order)
+/sdcard/Nova/covers/<key>.jpg  600x900 cover art (.png/.webp also work)
 ```
 
-See [CLAUDE.md](CLAUDE.md) for the full guide: emulator cores, getting ROMs from RomM, and the rules for cover art.
+On first launch Nova asks for "All files access" (needed to read `/sdcard/Nova`). If `games.json` doesn't exist, it writes one listing the installed apps Android classifies as games. Changes are picked up the next time you return to the home screen. If the file doesn't parse, Nova shows the error and falls back to the installed games.
 
-`tools/crop.swift` crops artwork to 600x900. `tools/title.swift` draws the title and "合集" obi band on collection covers.
+```json
+{
+  "games": [
+    { "title": "空洞骑士", "subtitle": "Hollow Knight", "package": "org.nx2a.t0100633007d48000" },
+    { "title": "恐龙快打", "subtitle": "Cadillacs and Dinosaurs · Arcade", "cover": "dino",
+      "retroarch": { "rom": "/storage/emulated/0/ROMs/arcade/dino.zip", "core": "fbneo" } },
+    { "title": "风之杖", "subtitle": "The Wind Waker · GameCube", "dolphin": "/storage/emulated/0/ROMs/gc/Zelda_Wind_Waker.gcz" },
+    { "title": "合金弹头 合集", "subtitle": "Metal Slug Collection", "cover": "metal_slug_collection",
+      "games": [ /* cards on the collection page */ ] }
+  ]
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `title`, `subtitle` | Card text. |
+| `package` | App to launch. Optional for `retroarch` (default `com.retroarch.aarch64`), `dolphin` (default `org.dolphinemu.dolphinemu`) and collections. |
+| `retroarch` | `{ "rom", "core" }`, where `core` is the libretro core name without `_libretro_android.so` (e.g. `fbneo`, `mgba`, `pcsx_rearmed`). |
+| `dolphin` | ROM path; standalone Dolphin boots it via `AutoStartFile`. |
+| `activity`, `extras` | Launch any activity of `package` with string extras. |
+| `games` | Makes the card a collection with its own page. |
+| `cover` | Cover key in `covers/`. Defaults to the ROM file name without extension, else the package name. Without a cover the card shows the app icon. |
+
+[`examples/Nova`](examples/Nova) is a full setup with covers. Install it with `adb push examples/Nova/. /sdcard/Nova/`.
+
+`tools/crop.swift` crops artwork to 600x900. `tools/title.swift` draws the title and "合集" obi band on collection covers. [CLAUDE.md](CLAUDE.md) has the full guide to emulator cores, getting ROMs, and the cover-art rules.

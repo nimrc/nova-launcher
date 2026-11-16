@@ -22,7 +22,7 @@ KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD:-android}
 rm -rf "$OUT" && mkdir -p "$OUT/classes" "$OUT/dex"
 
 "$BT/aapt2" compile --dir res -o "$OUT/res.zip"
-"$BT/aapt2" link -I "$JAR" --manifest AndroidManifest.xml -A assets \
+"$BT/aapt2" link -I "$JAR" --manifest AndroidManifest.xml \
   --min-sdk-version 33 --target-sdk-version 35 --version-code "$VERSION_CODE" --version-name "$VERSION" \
   -o "$OUT/unsigned.apk" "$OUT/res.zip"
 

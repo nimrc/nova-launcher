@@ -1,0 +1,236 @@
+{
+  "games": [
+    {
+      "title": "空洞骑士",
+      "subtitle": "Hollow Knight",
+      "package": "org.nx2a.t0100633007d48000"
+    },
+    {
+      "title": "空洞骑士：丝之歌",
+      "subtitle": "Hollow Knight: Silksong",
+      "package": "org.nx2a.hollowknightsilksong"
+    },
+    {
+      "title": "小丑牌",
+      "subtitle": "Balatro",
+      "package": "com.playstack.balatro.android"
+    },
+    {
+      "title": "吸血鬼幸存者",
+      "subtitle": "Vampire Survivors",
+      "package": "com.poncle.vampiresurvivors"
+    },
+    {
+      "title": "潜水员戴夫",
+      "subtitle": "Dave the Diver",
+      "package": "com.xd.dave.tap.cn"
+    },
+    {
+      "title": "蔚蓝",
+      "subtitle": "Celeste",
+      "package": "org.celesteandroid.celeste"
+    },
+    {
+      "title": "泰拉瑞亚",
+      "subtitle": "Terraria",
+      "package": "com.and.games505.TerrariaPaid"
+    },
+    {
+      "title": "星露谷物语",
+      "subtitle": "Stardew Valley",
+      "package": "com.chucklefish.stardewvalley"
+    },
+    {
+      "title": "我的世界",
+      "subtitle": "Minecraft",
+      "package": "com.minecraft.ow"
+    },
+    {
+      "title": "数码宝贝大乱斗",
+      "subtitle": "Digimon Rumble Arena · PlayStation",
+      "cover": "digimon_rumble_arena",
+      "retroarch": {
+        "rom": "/storage/emulated/0/Cartnest/ROMs/psx/Digimon Rumble Arena.PBP",
+        "core": "pcsx_rearmed"
+      }
+    },
+    {
+      "title": "口袋妖怪 金",
+      "subtitle": "Pokémon Gold · Game Boy Color",
+      "cover": "pokemon_gold",
+      "retroarch": {
+        "rom": "/storage/emulated/0/ROMs/gbc/Pokemon_Gold.gbc",
+        "core": "mgba"
+      }
+    },
+    {
+      "title": "恐龙快打",
+      "subtitle": "Cadillacs and Dinosaurs · Arcade",
+      "cover": "dino",
+      "retroarch": {
+        "rom": "/storage/emulated/0/ROMs/arcade/dino.zip",
+        "core": "fbneo"
+      }
+    },
+    {
+      "title": "吞食天地2",
+      "subtitle": "Warriors of Fate · Arcade",
+      "cover": "wof",
+      "retroarch": {
+        "rom": "/storage/emulated/0/ROMs/arcade/wof.zip",
+        "core": "fbneo"
+      }
+    },
+    {
+      "title": "影之传说",
+      "subtitle": "The Legend of Kage · Arcade",
+      "cover": "lkage",
+      "retroarch": {
+        "rom": "/storage/emulated/0/ROMs/arcade/lkage.zip",
+        "core": "fbneo"
+      }
+    },
+    {
+      "title": "合金弹头 合集",
+      "subtitle": "Metal Slug Collection · 8 部",
+      "cover": "metal_slug_collection",
+      "games": [
+        {
+          "title": "合金弹头",
+          "subtitle": "Metal Slug · Neo Geo",
+          "cover": "mslug",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/arcade/mslug.zip",
+            "core": "fbneo"
+          }
+        },
+        {
+          "title": "合金弹头2",
+          "subtitle": "Metal Slug 2 · Neo Geo",
+          "cover": "mslug2",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/arcade/mslug2.zip",
+            "core": "fbneo"
+          }
+        },
+        {
+          "title": "合金弹头X",
+          "subtitle": "Metal Slug X · Neo Geo",
+          "cover": "mslugx",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/arcade/mslugx.zip",
+            "core": "fbneo"
+          }
+        },
+        {
+          "title": "合金弹头3",
+          "subtitle": "Metal Slug 3 · Neo Geo",
+          "cover": "mslug3",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/arcade/mslug3.zip",
+            "core": "fbneo"
+          }
+        },
+        {
+          "title": "合金弹头4",
+          "subtitle": "Metal Slug 4 · Neo Geo",
+          "cover": "mslug4",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/arcade/mslug4.zip",
+            "core": "fbneo"
+          }
+        },
+        {
+          "title": "合金弹头5",
+          "subtitle": "Metal Slug 5 · Neo Geo",
+          "cover": "mslug5",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/arcade/mslug5.zip",
+            "core": "fbneo"
+          }
+        },
+        {
+          "title": "合金弹头6",
+          "subtitle": "Metal Slug 6 · Atomiswave",
+          "cover": "mslug6",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/arcade/mslug6.zip",
+            "core": "flycast"
+          }
+        },
+        {
+          "title": "合金弹头7",
+          "subtitle": "Metal Slug 7 · Nintendo DS",
+          "cover": "mslug7",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/nds/Metal_Slug_7.nds",
+            "core": "melonds"
+          }
+        }
+      ]
+    },
+    {
+      "title": "塞尔达传说 合集",
+      "subtitle": "The Legend of Zelda · 6 部",
+      "cover": "zelda_collection",
+      "games": [
+        {
+          "title": "塞尔达传说 风之杖",
+          "subtitle": "The Wind Waker · GameCube",
+          "cover": "zelda_ww",
+          "dolphin": "/storage/emulated/0/ROMs/gc/Zelda_Wind_Waker.gcz"
+        },
+        {
+          "title": "塞尔达传说 众神的三角力量",
+          "subtitle": "A Link to the Past & Four Swords · GBA",
+          "cover": "zelda_alttp",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/gba/Zelda_ALttP_Four_Swords.gba",
+            "core": "mgba"
+          }
+        },
+        {
+          "title": "塞尔达传说 缩小帽",
+          "subtitle": "The Minish Cap · GBA",
+          "cover": "zelda_minish",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/gba/Zelda_Minish_Cap.gba",
+            "core": "mgba"
+          }
+        },
+        {
+          "title": "塞尔达传说 织梦岛DX",
+          "subtitle": "Link's Awakening DX · GBC",
+          "cover": "zelda_la",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/gbc/Zelda_Links_Awakening_DX.gbc",
+            "core": "mgba"
+          }
+        },
+        {
+          "title": "塞尔达传说 时空之章",
+          "subtitle": "Oracle of Ages · GBC",
+          "cover": "zelda_ages",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/gbc/Zelda_Oracle_of_Ages.gbc",
+            "core": "mgba"
+          }
+        },
+        {
+          "title": "塞尔达传说 大地之章",
+          "subtitle": "Oracle of Seasons · GBC",
+          "cover": "zelda_seasons",
+          "retroarch": {
+            "rom": "/storage/emulated/0/ROMs/gbc/Zelda_Oracle_of_Seasons.gbc",
+            "core": "mgba"
+          }
+        }
+      ]
+    },
+    {
+      "title": "RetroArch",
+      "subtitle": "模拟器",
+      "package": "com.retroarch.aarch64"
+    }
+  ]
+}

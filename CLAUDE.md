@@ -13,17 +13,17 @@ Push a `v<x.y.z>` tag. `.github/workflows/release.yml` builds with `VERSION` fro
 
 ## Adding a game
 
-Add an entry to `GAMES` in `src/dev/nova/launcher/MainActivity.java`. Order in the array = card order.
+The card list is `/sdcard/Nova/games.json` on the device. The user's setup is kept in `examples/Nova/games.json`, and covers in `examples/Nova/covers/`. Edit the example, then push it with `adb push examples/Nova/. /sdcard/Nova/`. Nova reloads when it returns to the foreground, so there's no rebuild. The field reference is in README.md. Order in the array = card order.
 
 - Title is Chinese, subtitle is the English name (append ` · <platform>` for emulated games).
-- Native Android game: `new Game("中文名", "English Name", "<package>")`. Find the package with `adb shell pm list packages -3`.
-- RetroArch game: chain `.cover("<snake_case_name>").retroarch("<rom path>", "<core>")`. `core` is the `.so` name without `_libretro_android.so`.
+- Native Android game: `{"title": "中文名", "subtitle": "English Name", "package": "<package>"}`. Find the package with `adb shell pm list packages -3`.
+- RetroArch game: `"cover": "<snake_case_name>", "retroarch": {"rom": "<rom path>", "core": "<core>"}`. `core` is the `.so` name without `_libretro_android.so`.
   - For games already played, take the ROM path and core from `/sdcard/RetroArch/playlists/builtin/content_history.lpl`.
   - Known-good cores: `fbneo` (arcade and Neo Geo; the BIOS `neogeo.zip` is in `/sdcard/RetroArch/system`), `flycast` (Atomiswave/Naomi, e.g. `mslug6.zip`; FBNeo shows "unknown romset" for these; first boot takes ~30 s), `pcsx_rearmed` (PS1), `melonds` (NDS), `mgba` (GB/GBC/GBA). `mesen` hung (ANR) on `The Legend of Kage.nes`. `nestopia` is not installed.
-  - GameCube/Wii: standalone Dolphin, via `.dolphin("<rom path>")`, which passes the ROM as the `AutoStartFile` extra.
+  - GameCube/Wii: standalone Dolphin, via `"dolphin": "<rom path>"`, which passes the ROM as the `AutoStartFile` extra.
   - Arcade ROMs go in `/sdcard/ROMs/arcade/`, others in `/sdcard/ROMs/<platform>/`.
   - Test the launch before adding the card: `am start -n com.retroarch.aarch64/com.retroarch.browser.retroactivity.RetroActivityFuture -e ROM ... -e LIBRETRO ... -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch.aarch64/files/retroarch.cfg`. Then take a screenshot ~12 s later. The `[ENV] Auto-start game` log line only proves RetroArch received the intent, not that the core ran.
-- Series or collections: `new Game(...).cover(...).collection(child, child, ...)`. Pressing A opens a second-level page (`CollectionActivity`) with the children as cards. B goes back.
+- Series or collections: a card with `"games": [child, child, ...]`. Pressing A opens a second-level page (`CollectionActivity`) with the children as cards. B goes back.
 
 ## Getting ROMs from RomM
 
@@ -39,7 +39,7 @@ The user's RomM server URL is `$ROMM_URL` (see `CLAUDE.local.md`). Use the API w
 
 Every card must use a full-bleed cover. Never fall back to the app icon or a letterboxed image.
 
-- Store the cover at `assets/covers/<key>.jpg`. `<key>` is the package name, or the `.cover(...)` name when set.
+- Store the cover at `examples/Nova/covers/<key>.jpg` and push it to `/sdcard/Nova/covers/`. `<key>` is the `cover` field when set, else the ROM file name without extension, else the package name.
 - Size: exactly 600x900 (2:3 portrait), JPEG quality 85.
 - Use official art, in order of preference:
   1. A Steam library capsule, if the game is on Steam: `https://cdn.cloudflare.steamstatic.com/steam/apps/<appid>/library_600x900.jpg`.

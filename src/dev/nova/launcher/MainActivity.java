@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -35,110 +35,8 @@ import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 public class MainActivity extends Base {
     static final String EXTRA_COLLECTION = "collection";
-    private static final String RETROARCH = "com.retroarch.aarch64";
-
-    private static final class Game {
-        final String title, subtitle, pkg;
-        String cover, activity;
-        String[] extras = {};
-        Game[] children;
-
-        Game(String title, String subtitle, String pkg) {
-            this.title = title;
-            this.subtitle = subtitle;
-            this.pkg = pkg;
-            this.cover = pkg;
-        }
-
-        // Cover art: assets/covers/<name>.jpg or .png; falls back to the app icon.
-        Game cover(String name) {
-            cover = name;
-            return this;
-        }
-
-        // Opens a second-level page listing the children instead of launching anything.
-        Game collection(Game... games) {
-            children = games;
-            return this;
-        }
-
-        // Standalone Dolphin (GameCube/Wii); the launcher passes the ROM via AutoStartFile.
-        Game dolphin(String rom) {
-            activity = "org.dolphinemu.dolphinemu.ui.main.MainActivity";
-            extras = new String[]{"AutoStartFile", rom};
-            return this;
-        }
-
-        Game retroarch(String rom, String core) {
-            activity = "com.retroarch.browser.retroactivity.RetroActivityFuture";
-            extras = new String[]{
-                    "ROM", rom,
-                    "LIBRETRO", "/data/data/" + RETROARCH + "/cores/" + core + "_libretro_android.so",
-                    "CONFIGFILE", "/storage/emulated/0/Android/data/" + RETROARCH + "/files/retroarch.cfg",
-            };
-            return this;
-        }
-    }
-
-    private static final Game[] GAMES = {
-            new Game("空洞骑士", "Hollow Knight", "org.nx2a.t0100633007d48000"),
-            new Game("空洞骑士：丝之歌", "Hollow Knight: Silksong", "org.nx2a.hollowknightsilksong"),
-            new Game("小丑牌", "Balatro", "com.playstack.balatro.android"),
-            new Game("吸血鬼幸存者", "Vampire Survivors", "com.poncle.vampiresurvivors"),
-            new Game("潜水员戴夫", "Dave the Diver", "com.xd.dave.tap.cn"),
-            new Game("蔚蓝", "Celeste", "org.celesteandroid.celeste"),
-            new Game("泰拉瑞亚", "Terraria", "com.and.games505.TerrariaPaid"),
-            new Game("星露谷物语", "Stardew Valley", "com.chucklefish.stardewvalley"),
-            new Game("我的世界", "Minecraft", "com.minecraft.ow"),
-            new Game("数码宝贝大乱斗", "Digimon Rumble Arena · PlayStation", RETROARCH)
-                    .cover("digimon_rumble_arena")
-                    .retroarch("/storage/emulated/0/Cartnest/ROMs/psx/Digimon Rumble Arena.PBP", "pcsx_rearmed"),
-            new Game("口袋妖怪 金", "Pokémon Gold · Game Boy Color", RETROARCH)
-                    .cover("pokemon_gold").retroarch("/storage/emulated/0/ROMs/gbc/Pokemon_Gold.gbc", "mgba"),
-            new Game("恐龙快打", "Cadillacs and Dinosaurs · Arcade", RETROARCH)
-                    .cover("dino").retroarch("/storage/emulated/0/ROMs/arcade/dino.zip", "fbneo"),
-            new Game("吞食天地2", "Warriors of Fate · Arcade", RETROARCH)
-                    .cover("wof").retroarch("/storage/emulated/0/ROMs/arcade/wof.zip", "fbneo"),
-            new Game("影之传说", "The Legend of Kage · Arcade", RETROARCH)
-                    .cover("lkage").retroarch("/storage/emulated/0/ROMs/arcade/lkage.zip", "fbneo"),
-            new Game("合金弹头 合集", "Metal Slug Collection · 8 部", RETROARCH)
-                    .cover("metal_slug_collection").collection(
-                            neogeo("合金弹头", "Metal Slug", "mslug"),
-                            neogeo("合金弹头2", "Metal Slug 2", "mslug2"),
-                            neogeo("合金弹头X", "Metal Slug X", "mslugx"),
-                            neogeo("合金弹头3", "Metal Slug 3", "mslug3"),
-                            neogeo("合金弹头4", "Metal Slug 4", "mslug4"),
-                            neogeo("合金弹头5", "Metal Slug 5", "mslug5"),
-                            new Game("合金弹头6", "Metal Slug 6 · Atomiswave", RETROARCH)
-                                    .cover("mslug6").retroarch("/storage/emulated/0/ROMs/arcade/mslug6.zip", "flycast"),
-                            new Game("合金弹头7", "Metal Slug 7 · Nintendo DS", RETROARCH)
-                                    .cover("mslug7").retroarch("/storage/emulated/0/ROMs/nds/Metal_Slug_7.nds", "melonds")),
-            new Game("塞尔达传说 合集", "The Legend of Zelda · 6 部", "org.dolphinemu.dolphinemu")
-                    .cover("zelda_collection").collection(
-                            new Game("塞尔达传说 风之杖", "The Wind Waker · GameCube", "org.dolphinemu.dolphinemu")
-                                    .cover("zelda_ww").dolphin("/storage/emulated/0/ROMs/gc/Zelda_Wind_Waker.gcz"),
-                            new Game("塞尔达传说 众神的三角力量", "A Link to the Past & Four Swords · GBA", RETROARCH)
-                                    .cover("zelda_alttp").retroarch("/storage/emulated/0/ROMs/gba/Zelda_ALttP_Four_Swords.gba", "mgba"),
-                            new Game("塞尔达传说 缩小帽", "The Minish Cap · GBA", RETROARCH)
-                                    .cover("zelda_minish").retroarch("/storage/emulated/0/ROMs/gba/Zelda_Minish_Cap.gba", "mgba"),
-                            new Game("塞尔达传说 织梦岛DX", "Link's Awakening DX · GBC", RETROARCH)
-                                    .cover("zelda_la").retroarch("/storage/emulated/0/ROMs/gbc/Zelda_Links_Awakening_DX.gbc", "mgba"),
-                            new Game("塞尔达传说 时空之章", "Oracle of Ages · GBC", RETROARCH)
-                                    .cover("zelda_ages").retroarch("/storage/emulated/0/ROMs/gbc/Zelda_Oracle_of_Ages.gbc", "mgba"),
-                            new Game("塞尔达传说 大地之章", "Oracle of Seasons · GBC", RETROARCH)
-                                    .cover("zelda_seasons").retroarch("/storage/emulated/0/ROMs/gbc/Zelda_Oracle_of_Seasons.gbc", "mgba")),
-            new Game("RetroArch", "模拟器", RETROARCH),
-    };
-
-    private static Game neogeo(String title, String subtitle, String set) {
-        return new Game(title, subtitle + " · Neo Geo", RETROARCH)
-                .cover(set).retroarch("/storage/emulated/0/ROMs/arcade/" + set + ".zip", "fbneo");
-    }
     private static final int MATCH = ViewGroup.LayoutParams.MATCH_PARENT;
     private static final int WRAP = ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -151,6 +49,7 @@ public class MainActivity extends Base {
     private TextView title, subtitle, battery;
     private SharedPreferences prefs;
     private int focused;
+    private boolean batteryRegistered;
 
     private final BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
         @Override
@@ -166,11 +65,25 @@ public class MainActivity extends Base {
     protected void onCreate(Bundle state) {
         super.onCreate(state);
         collection = getIntent().getIntExtra(EXTRA_COLLECTION, -1);
-        items = collection >= 0 ? GAMES[collection].children : GAMES;
+        Game[] games = Config.games(this);
+        if (collection >= games.length || (collection >= 0 && games[collection].children == null)) {
+            finish();
+            return;
+        }
+        items = collection >= 0 ? games[collection].children : games;
         cards = new View[items.length];
         covers = new Bitmap[items.length];
         prefs = getSharedPreferences("nova", MODE_PRIVATE);
-        focused = Math.min(prefs.getInt(focusKey(), 0), items.length - 1);
+        focused = Math.max(0, Math.min(prefs.getInt(focusKey(), 0), items.length - 1));
+        if (collection < 0) {
+            if (Config.error != null) Toast.makeText(this, Config.error, Toast.LENGTH_LONG).show();
+            // Ask once for all-files access, needed to read /sdcard/Nova.
+            if (!Config.canRead() && !prefs.getBoolean("askedStorage", false)) {
+                prefs.edit().putBoolean("askedStorage", true).apply();
+                startActivity(new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                        Uri.fromParts("package", getPackageName(), null)));
+            }
+        }
 
         FrameLayout root = new FrameLayout(this);
         root.setBackgroundColor(0xFF0B0B10);
@@ -193,7 +106,7 @@ public class MainActivity extends Base {
 
         LinearLayout top = new LinearLayout(this);
         top.setGravity(Gravity.CENTER_VERTICAL);
-        TextView brand = text(collection >= 0 ? GAMES[collection].title : "NOVA", 13, 0x99FFFFFF, true);
+        TextView brand = text(collection >= 0 ? games[collection].title : "NOVA", 13, 0x99FFFFFF, true);
         brand.setLetterSpacing(0.35f);
         top.addView(brand, new LinearLayout.LayoutParams(0, WRAP, 1));
         battery = text("", 14, 0xCCFFFFFF, false);
@@ -225,7 +138,13 @@ public class MainActivity extends Base {
             row.addView(cards[i], lp);
         }
         scroller.addView(row, new FrameLayout.LayoutParams(WRAP, MATCH));
-        column.addView(scroller, new LinearLayout.LayoutParams(MATCH, 0, 1));
+        if (items.length == 0) {
+            TextView empty = text("没有游戏 — 编辑 " + Config.FILE.getPath(), 15, 0x99FFFFFF, false);
+            empty.setGravity(Gravity.CENTER);
+            column.addView(empty, new LinearLayout.LayoutParams(MATCH, 0, 1));
+        } else {
+            column.addView(scroller, new LinearLayout.LayoutParams(MATCH, 0, 1));
+        }
 
         LinearLayout bottom = new LinearLayout(this);
         bottom.setGravity(Gravity.BOTTOM);
@@ -240,16 +159,25 @@ public class MainActivity extends Base {
         column.addView(bottom, MATCH, dp(64));
 
         setContentView(root);
-        showFocus(focused);
+        if (items.length > 0) showFocus(focused);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (items == null) return;
+        if (Config.stale()) {
+            // games.json or storage access changed; a collection index may no longer be valid.
+            if (collection >= 0) finish();
+            else recreate();
+            return;
+        }
+        batteryRegistered = true;
         Intent sticky = registerReceiver(batteryReceiver,
                 new IntentFilter(Intent.ACTION_BATTERY_CHANGED), RECEIVER_EXPORTED);
         if (sticky != null) batteryReceiver.onReceive(this, sticky);
         // Also lands focus on this card when leaving touch mode on the first D-pad press.
+        if (cards.length == 0) return;
         for (View c : cards) c.setFocusedByDefault(c == cards[focused]);
         cards[focused].requestFocus();
     }
@@ -257,7 +185,8 @@ public class MainActivity extends Base {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(batteryReceiver);
+        if (batteryRegistered) unregisterReceiver(batteryReceiver);
+        batteryRegistered = false;
     }
 
     @Override
@@ -265,7 +194,7 @@ public class MainActivity extends Base {
         int code = e.getKeyCode();
         // Act on the highlighted card even when the window hasn't settled view focus yet.
         if (code == KeyEvent.KEYCODE_BUTTON_A || code == KeyEvent.KEYCODE_DPAD_CENTER || code == KeyEvent.KEYCODE_ENTER) {
-            if (e.getAction() == KeyEvent.ACTION_UP) launch(focused, cards[focused]);
+            if (e.getAction() == KeyEvent.ACTION_UP && cards != null && cards.length > 0) launch(focused, cards[focused]);
             return true;
         }
         if (code == KeyEvent.KEYCODE_BUTTON_Y) {
@@ -295,7 +224,7 @@ public class MainActivity extends Base {
 
     private View card(int i, int w, int h) {
         Game g = items[i];
-        boolean installed = getPackageManager().getLaunchIntentForPackage(g.pkg) != null;
+        boolean installed = g.pkg == null || getPackageManager().getLaunchIntentForPackage(g.pkg) != null;
         int radius = dp(14);
 
         FrameLayout card = new FrameLayout(this);
@@ -313,9 +242,9 @@ public class MainActivity extends Base {
         card.setElevation(dp(6));
         card.setAlpha(0.6f);
 
-        Bitmap cover = loadCover(g.cover);
+        Bitmap cover = Config.cover(g.cover);
         boolean isIcon = cover == null;
-        if (isIcon) cover = appIcon(g.pkg);
+        if (isIcon && g.pkg != null) cover = appIcon(g.pkg);
         covers[i] = cover;
 
         ImageView img = new ImageView(this);
@@ -385,7 +314,7 @@ public class MainActivity extends Base {
         if (launch == null || g.activity == null) return launch;
         Intent i = new Intent(Intent.ACTION_MAIN).setClassName(g.pkg, g.activity)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        for (int k = 0; k < g.extras.length; k += 2) i.putExtra(g.extras[k], g.extras[k + 1]);
+        g.extras.forEach(i::putExtra);
         if (i.hasExtra("ROM")) {
             // RetroArch restores this IME when it exits.
             i.putExtra("IME", Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD));
@@ -411,16 +340,6 @@ public class MainActivity extends Base {
         v.setScaleY(1.2f);
         v.setRenderEffect(RenderEffect.createBlurEffect(radius, radius, Shader.TileMode.CLAMP));
         return v;
-    }
-
-    private Bitmap loadCover(String name) {
-        for (String ext : new String[]{".jpg", ".png"}) {
-            try (InputStream in = getAssets().open("covers/" + name + ext)) {
-                return BitmapFactory.decodeStream(in);
-            } catch (IOException ignored) {
-            }
-        }
-        return null;
     }
 
     private Bitmap appIcon(String pkg) {
